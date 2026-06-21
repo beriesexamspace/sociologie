@@ -85,6 +85,11 @@
   @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .fadein{animation:fade .4s var(--ease) both}
+  .credit{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent-ink);font-weight:600;font-size:12.5px;padding:5px 11px;border-radius:999px;margin:-8px 0 18px}
+  .share{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border:1.5px solid var(--accent);background:var(--accent-soft);border-radius:var(--r);padding:14px 16px;margin:20px 0 0;cursor:pointer;text-decoration:none;color:var(--ink);transition:transform .18s var(--ease),box-shadow .2s}
+  .share:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .share .si{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(150deg,var(--accent),var(--accent-ink));font-size:18px}
+  .share b{display:block;font-size:14.5px} .share small{color:var(--muted);font-size:12.5px}
 </style>
 </head>
 <body data-theme="light">
@@ -351,6 +356,7 @@ var SUMMARY = [
    var total=SOCIO_DATA.length;
    var html='<div class="fadein"><h1>Sociologie oefenen 💪</h1>'+
      '<p class="sub">'+total+' meerkeuzevragen uit het examen · 1ste bachelor · directe feedback met uitleg waar mogelijk.</p>'+
+     '<div class="credit">🙌 Dit vak werd aangevraagd door medestudent Laure</div>'+
      '<div class="seclabel">Hoe wil je oefenen?</div>'+
      '<div class="grid g2">'+
        card("oefen","Oefenen","Alle vragen door elkaar, met meteen feedback na elke vraag.")+
@@ -358,6 +364,7 @@ var SUMMARY = [
        card("chap","Per hoofdstuk","Kies één of meer hoofdstukken (H1–H16) om gericht te oefenen.")+
        card("sum","Samenvatting","Korte concepten per hoofdstuk om snel op te frissen.")+
      '</div>'+
+     '<a class="share" href="https://beriesexamspace.github.io/?deel=1"><span class="si">📚</span><span><b>Heb jij ook goeie samenvattingen?</b><small>Deel je vak → wij maken er gratis een oefentool van.</small></span></a>'+
      '<p class="visits">Tip: bij "kies de 2 foute antwoorden" duid je de <i>onjuiste</i> stellingen aan — let goed op de vraagstelling.</p>'+
    '</div>';
    setHTML(html);
