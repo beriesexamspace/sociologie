@@ -86,11 +86,11 @@
   @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .fadein{animation:fade .4s var(--ease) both}
-  .credit{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--accent-ink);font-weight:600;font-size:12.5px;padding:5px 11px;border-radius:999px;margin:-8px 0 18px}
-  .share{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border:1.5px solid var(--accent);background:var(--accent-soft);border-radius:var(--r);padding:14px 16px;margin:20px 0 0;cursor:pointer;text-decoration:none;color:var(--ink);transition:transform .18s var(--ease),box-shadow .2s}
-  .share:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-  .share .si{flex:none;width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(150deg,var(--accent),var(--accent-ink));font-size:18px}
-  .share b{display:block;font-size:14.5px} .share small{color:var(--muted);font-size:12.5px}
+  .brandstrip{display:flex;align-items:center;gap:13px;width:100%;text-decoration:none;color:inherit;border:1px solid var(--line);background:var(--bg2);border-radius:var(--r);padding:12px 16px;margin:14px 0 2px;box-shadow:var(--shadow);transition:border-color .2s var(--ease),transform .15s var(--ease)}
+  .brandstrip:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .brandstrip .bs-logo{width:36px;height:36px;border-radius:10px;flex:none;display:grid;place-items:center;color:#fff;font-family:Georgia,serif;font-weight:700;font-size:17px;background:linear-gradient(145deg,var(--accent),var(--accent-ink))}
+  .brandstrip .bs-txt{flex:1;min-width:0} .brandstrip .bs-txt b{display:block;font-size:14.5px} .brandstrip .bs-txt small{color:var(--muted);font-size:12.5px}
+  .brandstrip .bs-go{color:var(--accent-ink);flex:none;display:inline-flex} .brandstrip .bs-go svg{width:18px;height:18px}
 </style>
 </head>
 <body data-theme="light">
@@ -99,7 +99,7 @@
   <div class="brand"><span class="logo">S</span><div>Sociologie<small>Berie's exam space</small></div></div>
   <span class="spacer"></span>
   <a class="iconbtn" href="https://beriesexamspace.github.io/" title="Alle vakken — Berie's exam space" style="text-decoration:none"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Vakken</a>
-  <button class="iconbtn" id="themeBtn">Donker</button>
+  <button class="iconbtn" id="themeBtn" aria-label="Wissel tussen licht en donker thema"></button>
 </div></header>
 <div class="wrap" id="app"></div>
 
@@ -335,7 +335,7 @@ var SUMMARY = [
  function L(k,d){try{var v=localStorage.getItem(k);return v==null?d:v;}catch(e){return d;}}
  function S(k,v){try{localStorage.setItem(k,v);}catch(e){}}
  var theme=L("site_theme","light"); document.body.setAttribute("data-theme",theme);
- function applyTheme(){document.body.setAttribute("data-theme",theme);document.getElementById("themeBtn").textContent=theme==="dark"?"Licht":"Donker";}
+ function applyTheme(){document.body.setAttribute("data-theme",theme);var ti=theme==="dark"?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';document.getElementById("themeBtn").innerHTML=ti+'<span>'+(theme==="dark"?"Licht":"Donker")+'</span>';}
  applyTheme();
  document.getElementById("themeBtn").onclick=function(){theme=theme==="dark"?"light":"dark";S("site_theme",theme);applyTheme();};
  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
@@ -343,6 +343,7 @@ var SUMMARY = [
  function pct(n,d){return d?Math.round(100*n/d):0;}
  var CHK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>';
  var XIC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+ var ARR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
  var chaptersWith=function(){var s={};SOCIO_DATA.forEach(function(q){s[q.c]=(s[q.c]||0)+1;});return s;};
  var state={view:"home",pool:null,timer:null};
  function setHTML(h){app.innerHTML=h;}
@@ -357,7 +358,8 @@ var SUMMARY = [
    var total=SOCIO_DATA.length;
    var html='<div class="fadein"><h1>Sociologie oefenen 💪</h1>'+
      '<p class="sub">'+total+' meerkeuzevragen uit het examen · 1ste bachelor · directe feedback met uitleg waar mogelijk.</p>'+
-     '<div class="credit">🙌 Dit vak werd aangevraagd door medestudent Laure</div>'+
+     '<a class="brandstrip" href="https://beriesexamspace.github.io/" title="Naar Berie\'s exam space"><span class="bs-logo">B</span><span class="bs-txt"><b>Berie\'s exam space</b><small>Een ander vak leren? Bekijk alle vakken</small></span><span class="bs-go">'+ARR+'</span></a>'+
+     '<a class="brandstrip" href="https://beriesexamspace.github.io/?deel=1" title="Deel je samenvattingen"><span class="bs-logo">📚</span><span class="bs-txt"><b>Help mee — deel je vak</b><small>Heb jij samenvattingen of oude examenvragen? Stuur ze in (élk jaar).</small></span><span class="bs-go">'+ARR+'</span></a>'+
      '<div class="seclabel">Hoe wil je oefenen?</div>'+
      '<div class="grid g2">'+
        card("oefen","Oefenen","Alle vragen door elkaar, met meteen feedback na elke vraag.")+
@@ -365,7 +367,6 @@ var SUMMARY = [
        card("chap","Per hoofdstuk","Kies één of meer hoofdstukken (H1–H16) om gericht te oefenen.")+
        card("sum","Samenvatting","Korte concepten per hoofdstuk om snel op te frissen.")+
      '</div>'+
-     '<a class="share" href="https://beriesexamspace.github.io/?deel=1"><span class="si">📚</span><span><b>Heb jij ook goeie samenvattingen?</b><small>Deel je vak → wij maken er gratis een oefentool van.</small></span></a>'+
      '<p class="visits">Tip: bij "kies de 2 foute antwoorden" duid je de <i>onjuiste</i> stellingen aan — let goed op de vraagstelling.</p>'+
    '</div>';
    setHTML(html);
