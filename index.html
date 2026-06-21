@@ -366,8 +366,10 @@ window.SOCIO = {"chapters":{"1":"De sociologische verzuchting","2":"De taak en h
     function pool(){ return D.questions.filter(function(q){return s.topics[q.t];}); }
     var html='<div class="card pad"><h2 style="margin-top:0">'+L("Oefenvragen","Practice questions")+'</h2>'+
       '<p class="muted">'+L("Kies hoofdstukken en het aantal vragen. Na elke vraag krijg je meteen feedback.","Pick chapters and the number of questions. You get instant feedback after each one.")+'</p>'+
-      '<label class="fld">'+L("Hoofdstukken","Chapters")+'</label><div class="chips" id="tps">'+
-        Object.keys(D.chapters).map(function(k){return '<button class="chip'+(s.topics[k]?" on":"")+'" data-tp="'+k+'" title="'+esc(chName(k))+'">H'+k+'</button>';}).join("")+'</div>'+
+      '<label class="fld">'+L("Hoofdstukken","Chapters")+'</label>'+
+      '<div class="chips" style="margin-bottom:8px"><button class="chip" id="selAll">'+L("Alle","All")+'</button><button class="chip" id="selNone">'+L("Geen","None")+'</button></div>'+
+      '<div class="chips" id="tps">'+
+        Object.keys(D.chapters).map(function(k){return '<button class="chip'+(s.topics[k]?" on":"")+'" data-tp="'+k+'">H'+k+' · '+esc(chName(k))+'</button>';}).join("")+'</div>'+
       '<label class="fld">'+L("Aantal vragen","Number of questions")+'</label><div class="chips" id="cnt">'+
         [10,15,20,999].map(function(n){return '<button class="chip'+(s.count===n?" on":"")+'" data-n="'+n+'">'+(n===999?L("Alle","All"):n)+'</button>';}).join("")+'</div>'+
       '<label class="fld"><input type="checkbox" id="shuf" '+(s.shuffle?"checked":"")+'> '+L("Willekeurige volgorde","Random order")+'</label>'+
@@ -375,6 +377,8 @@ window.SOCIO = {"chapters":{"1":"De sociologische verzuchting","2":"De taak en h
     setHTML(html);
     function refresh(){ var n=pool().length; document.getElementById("poolN").textContent=n+" "+L("vragen beschikbaar","questions available"); document.getElementById("startQ").disabled=n===0; }
     [].slice.call(document.querySelectorAll("#tps .chip")).forEach(function(b){ b.onclick=function(){ s.topics[b.dataset.tp]=!s.topics[b.dataset.tp]; b.classList.toggle("on"); refresh(); }; });
+    document.getElementById("selAll").onclick=function(){ Object.keys(D.chapters).forEach(function(k){s.topics[k]=true;}); renderQuizGate(); };
+    document.getElementById("selNone").onclick=function(){ Object.keys(D.chapters).forEach(function(k){s.topics[k]=false;}); renderQuizGate(); };
     [].slice.call(document.querySelectorAll("#cnt .chip")).forEach(function(b){ b.onclick=function(){ s.count=+b.dataset.n; renderQuizGate(); }; });
     document.getElementById("shuf").onchange=function(e){ s.shuffle=e.target.checked; };
     document.getElementById("startQ").onclick=function(){ var p=pool(); if(s.shuffle)p=shuffle(p); if(s.count<p.length)p=p.slice(0,s.count); startQuiz(p); };
