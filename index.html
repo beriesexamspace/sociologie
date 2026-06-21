@@ -7,26 +7,27 @@
 <meta name="description" content="Gratis oefentool voor het examen Sociologie (1ste bachelor): meerkeuzevragen met directe feedback, per hoofdstuk en als examensimulatie.">
 <style>
   :root{
-    --bg:#f6f7fb; --bg2:#ffffff; --ink:#15171c; --muted:#697086; --line:#e6e8ef;
-    --accent:#4f46e5; --accent-ink:#4338ca; --accent-soft:#eef0fe;
-    --good:#15803d; --good-soft:#e9f7ef; --bad:#b42318; --bad-soft:#fdeceb; --amber:#b45309;
-    --r:16px; --shadow:0 1px 2px rgba(20,23,28,.06); --shadow-lg:0 18px 50px rgba(20,23,28,.14);
-    --ease:cubic-bezier(.22,.61,.36,1);
+    --bg:#f4f2ee; --bg2:#ffffff; --ink:#1b232c; --muted:#5d6873; --line:#e2ddd4;
+    --accent:#0f6e6a; --accent-ink:#0b4f4c; --accent-soft:#dcefed;
+    --good:#1f8a4c; --good-soft:#e2f3e8; --bad:#c0392b; --bad-soft:#fbeae7; --amber:#c9821f;
+    --r:16px; --shadow:0 1px 2px rgba(20,30,40,.05),0 6px 18px rgba(20,30,40,.05); --shadow-lg:0 2px 6px rgba(20,30,40,.06),0 18px 40px rgba(20,30,40,.10);
+    --ease:cubic-bezier(.2,.8,.2,1);
   }
   [data-theme="dark"]{
-    --bg:#0b0d12; --bg2:#13161d; --ink:#eef0f5; --muted:#9aa1b4; --line:#252a35;
-    --accent:#818cf8; --accent-ink:#a5b4fc; --accent-soft:#1b2030;
-    --good:#4ade80; --good-soft:#11231a; --bad:#f87171; --bad-soft:#2a1414; --amber:#fbbf24;
-    --shadow:0 1px 2px rgba(0,0,0,.4); --shadow-lg:0 24px 60px rgba(0,0,0,.55);
+    --bg:#11151a; --bg2:#1b222b; --ink:#e7ecf1; --muted:#9aa6b2; --line:#2a323c;
+    --accent:#3fb9b2; --accent-ink:#7fd6d0; --accent-soft:#163230;
+    --good:#46c178; --good-soft:#16301f; --bad:#f06a5d; --bad-soft:#2a1414; --amber:#e0a64a;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35); --shadow-lg:0 2px 8px rgba(0,0,0,.4),0 22px 48px rgba(0,0,0,.5);
   }
   *{box-sizing:border-box}
   html,body{margin:0}
-  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Georgia,"Iowan Old Style","Times New Roman",serif}
   .wrap{max-width:780px;margin:0 auto;padding:0 18px 80px}
   header.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:saturate(150%) blur(14px);-webkit-backdrop-filter:saturate(150%) blur(14px);border-bottom:1px solid var(--line)}
   .topin{max-width:780px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:11px 18px}
   .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-.02em}
-  .logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;background:linear-gradient(150deg,var(--accent),var(--accent-ink));box-shadow:var(--shadow)}
+  .logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;font-family:Georgia,serif;font-weight:700;font-size:17px;background:linear-gradient(150deg,var(--accent),var(--accent-ink));box-shadow:0 2px 6px rgba(15,110,106,.35)}
   .brand small{display:block;font-weight:500;color:var(--muted);font-size:11.5px;letter-spacing:0}
   .spacer{flex:1}
   .iconbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--bg2);color:var(--ink);border-radius:10px;padding:7px 11px;font-size:13px;font-weight:600;cursor:pointer;transition:border-color .2s,transform .1s}
@@ -81,7 +82,7 @@
   /* splash */
   #splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:radial-gradient(120% 120% at 50% 35%,var(--bg2),var(--bg) 70%);transition:opacity .55s var(--ease),transform .6s var(--ease)}
   #splash.hide{opacity:0;transform:scale(1.05);pointer-events:none}
-  .sp-logo{width:84px;height:84px;border-radius:22px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:40px;background:linear-gradient(150deg,var(--accent),var(--accent-ink));box-shadow:0 14px 40px rgba(79,70,229,.45)}
+  .sp-logo{width:84px;height:84px;border-radius:22px;display:grid;place-items:center;color:#fff;font-family:Georgia,serif;font-weight:700;font-size:40px;background:linear-gradient(150deg,var(--accent),var(--accent-ink));box-shadow:0 14px 40px rgba(15,110,106,.4)}
   @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .fadein{animation:fade .4s var(--ease) both}
