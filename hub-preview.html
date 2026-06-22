@@ -93,6 +93,7 @@
   .ycard b{font-size:19px} .ycard small{color:var(--muted);font-size:13.5px;line-height:1.5}
   .ycard .go{margin-top:auto;padding-top:8px;display:inline-flex;align-items:center;gap:6px;color:var(--accent-ink);font-weight:600;font-size:13.5px}
   .ycard.v .go{color:var(--violet)} .ycard.a .go{color:var(--amber)} .ycard .go .ic{width:16px;height:16px}
+  .ycard .ycount{font-size:12.5px;font-weight:700;color:var(--accent-ink)} .ycard.v .ycount{color:var(--violet)} .ycard.a .ycount{color:var(--amber)} .ycard .ycount:empty{display:none}
 
   /* vakkaarten — stijl van foto 1 */
   .subjects{display:grid;gap:16px;grid-template-columns:1fr}
@@ -143,7 +144,7 @@
     <div class="heromark"><div class="hl">B</div></div>
     <h1>Berie’s exam space</h1>
     <p class="sub">Oefen slim voor je examen. Kies je jaar, daarna je vak — met directe feedback en uitleg bij elke vraag.</p>
-    <div class="statpill"><span class="dot"></span><span>Wordt al gebruikt door <b id="statN">473</b> studenten</span></div>
+    <div class="statpill"><span class="dot"></span><span>Wordt al gebruikt door <b id="statN">…</b> studenten</span></div>
   </div>
 
   <a class="callout" href="#" onclick="return false">
@@ -200,9 +201,9 @@
   var BASE="https://beriesexamspace.github.io/";
   var DATA=[
     {y:"1ste bachelor", tag:"1", cls:"", subjects:[
-      {n:"Menselijke Biologie & Genetica", desc:"De biologische basis van gedrag.", url:BASE+"mbg/"},
-      {n:"Statistiek II", desc:"SPSS & statistiek.", url:BASE+"stat/"},
-      {n:"Sociologie", desc:"112 examenvragen, H1–H16, met directe feedback.", url:BASE+"sociologie/"},
+      {n:"Menselijke Biologie & Genetica", desc:"De biologische basis van gedrag.", url:BASE+"mbg/", ns:"berat-mbg"},
+      {n:"Statistiek II", desc:"SPSS & statistiek.", url:BASE+"stat/", ns:"berat-stat"},
+      {n:"Sociologie", desc:"112 examenvragen, H1–H16, met directe feedback.", url:BASE+"sociologie/", ns:"berat-socio"},
       {n:"Inleiding tot de Psychologie", desc:"Algemene psychologie.", soon:true},
       {n:"Ontwikkelingspsychologie", desc:"Ontwikkeling over de levensloop.", soon:true},
       {n:"Sociale Psychologie", desc:"Gedrag in sociale context.", soon:true},
@@ -240,6 +241,8 @@
   ];
 
   var main=document.getElementById("main");
+  var YEARCOUNT=[], TOTALCOUNT=null;
+  function ycountText(i){ return (YEARCOUNT[i]>0) ? ('👥 '+YEARCOUNT[i]+' studenten') : ''; }
   function count(arr){ return arr.filter(function(s){return !s.soon;}).length; }
 
   function renderYears(){
@@ -253,6 +256,7 @@
         '<span class="tile">'+yr.tag+'</span>'+
         '<b>'+esc(yr.y)+'</b>'+
         '<small>'+esc(sub)+'</small>'+
+        '<span class="ycount">'+ycountText(i)+'</span>'+
         '<span class="go">Bekijk vakken '+ic("arrowR")+'</span></button>';
     });
     html+='</div>';
@@ -303,7 +307,19 @@
   document.getElementById("upIc").innerHTML=ic("upload");
   document.getElementById("upGo").innerHTML=ic("arrowR");
 
-  // teller staat op een vast getal (473); later koppelen aan het echte totaal kan
+  // ---------- live teller: totaal + per jaar ----------
+  // Tellt de echte bezoekers per vak op (abacus). Klopt een vak niet? Pas 'ns' aan in DATA.
+  var CNT_KEY="gebruikers";
+  function getCount(ns){ return fetch("https://abacus.jasoncameron.dev/get/"+ns+"/"+CNT_KEY).then(function(r){return r.json();}).then(function(d){ var v=d&&(d.value!=null?d.value:d.count); return (typeof v==="number"&&v>0)?v:0; }).catch(function(){ return 0; }); }
+  (function loadCounts(){
+    var per=DATA.map(function(){return 0;}), jobs=[];
+    DATA.forEach(function(yr,yi){ yr.subjects.forEach(function(s){ if(s.ns){ jobs.push(getCount(s.ns).then(function(n){ per[yi]+=n; })); } }); });
+    Promise.all(jobs).then(function(){
+      YEARCOUNT=per; TOTALCOUNT=per.reduce(function(a,b){return a+b;},0);
+      var el=document.getElementById("statN"); if(el&&TOTALCOUNT>0) el.textContent=TOTALCOUNT;
+      DATA.forEach(function(_,i){ var c=document.querySelector('.ycard[data-y="'+i+'"] .ycount'); if(c) c.textContent=ycountText(i); });
+    });
+  })();
 
   renderYears();
 })();
