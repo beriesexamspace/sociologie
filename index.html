@@ -191,6 +191,21 @@
   @keyframes bes-twinkle{0%,100%{opacity:1;transform:scale(1) rotate(0deg)}50%{opacity:.65;transform:scale(.82) rotate(18deg)}}
   @keyframes bes-rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
   .opt.sel{border-color:var(--accent);background:var(--accent-soft)} .opt.sel .k{background:var(--accent);color:#fff}
+  /* ---- enquête (popup) + reviews ---- */
+  .ovl{position:fixed;inset:0;z-index:150;display:grid;place-items:center;padding:16px;background:rgba(12,18,24,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);animation:fadeUp .25s var(--ease) both}
+  .ovl .sheet{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);max-width:450px;width:100%;max-height:90vh;overflow:auto;padding:22px 22px 24px;animation:fadeUp .3s var(--ease) both}
+  .sheet h3{margin:0;font-size:20px}
+  .sx{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:9px;width:32px;height:32px;flex:none;font-size:15px;line-height:1;transition:border-color .2s var(--ease),color .2s var(--ease)}
+  .sx:hover{border-color:var(--accent);color:var(--ink)}
+  .qblk{margin:16px 0 0} .qblk .ql{display:block;font-weight:600;font-size:14.5px;margin-bottom:8px}
+  .stars{display:flex;gap:6px} .stars button{font-size:28px;background:none;border:none;line-height:1;color:var(--line);padding:0;transition:transform .12s var(--ease),color .12s var(--ease)}
+  .stars button.on{color:var(--amber)} .stars button:hover{transform:scale(1.12)}
+  .reviews{display:grid;gap:12px;margin-top:2px} @media(min-width:620px){.reviews{grid-template-columns:1fr 1fr}}
+  .review{border:1px solid var(--line);background:var(--card);border-radius:var(--r);padding:15px 16px;box-shadow:var(--shadow)}
+  .review .rh{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+  .review .av{width:36px;height:36px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-weight:700;font-family:Georgia,serif;background:linear-gradient(150deg,var(--accent),var(--accent-ink))}
+  .review .rn{font-weight:700;font-size:14px;line-height:1.2} .review .rs{color:var(--amber);font-size:13px;letter-spacing:2px}
+  .review p{margin:0;font-size:14px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -280,6 +295,24 @@ window.SOCIO = {"chapters":{"1":"De sociologische verzuchting","2":"De taak en h
   var WARM_EN=["No worries — this is exactly how you learn.","Almost! You'll master this type soon.","Mistakes are fine — now you know what to review.","No problem, you'll remember this next time.","Relax — one slip says nothing about your exam."];
   var PRAISE=L(["Juist!","Goed zo!","Correct!","Sterk!","Knap!"],["Correct!","Well done!","Exactly!","Strong!","Nice!"]);
 
+  // ===== REVIEWS — pas hier de getoonde reviews aan =====
+  // Vervang/voeg ECHTE reviews toe (komen binnen via de enquête, in je mail).
+  // Velden: n = naam · r = sterren (1-5) · t = tekst (NL) · t_en = tekst (EN, optioneel)
+  var REVIEWS=[
+    {n:"Laure", r:5, t:"De directe feedback na elke vraag is goud waard — veel beter dan alleen je samenvatting herlezen.", t_en:"The instant feedback after each question is gold — way better than just rereading your notes."},
+    {n:"Maxim", r:5, t:"Ik doe elke avond een ronde. De vragen voelen echt zoals op het examen.", t_en:"I do a round every evening. The questions really feel like the exam."},
+    {n:"Inès", r:4, t:"Super handig dat je per hoofdstuk kunt kiezen. Zou graag nog meer vragen zien!", t_en:"Love that you can pick per chapter. Would love even more questions!"}
+  ];
+  function stars5(r){ r=Math.max(0,Math.min(5,r||0)); var s=""; for(var i=1;i<=5;i++){ s+=(i<=r?"★":"☆"); } return s; }
+  function reviewsHTML(){
+    if(!REVIEWS.length) return '<div class="card pad center muted">'+L("Nog geen reviews — wees de eerste! 🙂","No reviews yet — be the first! 🙂")+'</div>';
+    return '<div class="reviews">'+REVIEWS.map(function(rv){
+      var t=(LANG==="en"&&rv.t_en)?rv.t_en:rv.t;
+      var nm=rv.n||L("Student","Student");
+      return '<div class="review"><div class="rh"><span class="av">'+esc(nm.charAt(0).toUpperCase())+'</span><div><div class="rn">'+esc(nm)+'</div><div class="rs" aria-label="'+(rv.r||5)+'/5">'+stars5(rv.r||5)+'</div></div></div><p>'+esc(t)+'</p></div>';
+    }).join("")+'</div>';
+  }
+
   function buildTabs(){
     var TABS=[{v:"home",l:L("Start","Start"),i:"book"},{v:"quiz",l:L("Oefenvragen","Practice"),i:"target"},{v:"theory",l:L("Samenvatting","Summary"),i:"search"},{v:"hacks",l:L("Studie-hacks","Study hacks"),i:"bulb"},{v:"feedback",l:L("Feedback","Feedback"),i:"msg"}];
     tabsEl.innerHTML=TABS.map(function(t){return '<button data-view="'+t.v+'"'+(t.v===state.view?' class="on"':'')+'>'+ic(t.i)+'<span>'+t.l+'</span></button>';}).join("");
@@ -325,9 +358,15 @@ window.SOCIO = {"chapters":{"1":"De sociologische verzuchting","2":"De taak en h
       '</div>'+
       '<div class="card pad" style="margin-top:18px"><b>'+L("Inhoud","Content")+'</b>'+
         '<p class="muted" style="font-size:13.5px;margin:8px 0 0">'+L("16 hoofdstukken (H1–H16) · "+D.questions.length+" meerkeuzevragen, sommige met meerdere juiste/foute antwoorden.","16 chapters (H1–H16) · "+D.questions.length+" multiple-choice questions, some with several correct/incorrect answers.")+'</p>'+
-        '<p class="muted" style="font-size:12.5px;margin:8px 0 0">'+L("Tip: bovenaan vind je ook de Samenvatting en Studie-hacks.","Tip: at the top you'll also find the Summary and Study hacks.")+'</p></div>';
+        '<p class="muted" style="font-size:12.5px;margin:8px 0 0">'+L("Tip: bovenaan vind je ook de Samenvatting en Studie-hacks.","Tip: at the top you'll also find the Summary and Study hacks.")+'</p></div>'+
+      '<div class="seclabel" style="margin-top:26px">'+ic("heart")+L("Wat studenten zeggen","What students say")+'<span id="useCount" class="muted" style="margin-left:auto;font-weight:600;font-size:12.5px"></span></div>'+
+      reviewsHTML()+
+      '<div class="row" style="margin-top:12px;justify-content:center"><button class="btn ghost" id="leaveRev">'+ic("send")+L("Laat een review achter","Leave a review")+'</button></div>';
     setHTML(html);
     [].slice.call(document.querySelectorAll(".track")).forEach(function(el){ el.onclick=function(){ var t=el.dataset.track; state.track=t; lset("socio_track",t); state.step=(t==="herkansing"?"herkansing":"practice"); renderHome(); window.scrollTo(0,0); }; });
+    var lr=document.getElementById("leaveRev"); if(lr) lr.onclick=function(){ openSurvey(true); };
+    var uc=document.getElementById("useCount");
+    if(uc){ try{ fetch("https://abacus.jasoncameron.dev/get/berat-socio/gebruikers").then(function(r){return r.json();}).then(function(d){ var v=d&&(d.value!=null?d.value:d.count); if(typeof v==="number"&&v>0){ uc.textContent="👥 "+v+" "+L("studenten","students"); } }).catch(function(){}); }catch(e){} }
   }
 
   function renderHerkansing(){
@@ -496,6 +535,68 @@ window.SOCIO = {"chapters":{"1":"De sociologische verzuchting","2":"De taak en h
     };
   }
 
+  // ---------- mini-enquête (popup) ----------
+  var surveyOpen=false;
+  function openSurvey(focusReview){
+    if(surveyOpen) return; surveyOpen=true;
+    var sv={helps:"", rating:0, wa:""};
+    var ovl=document.createElement("div"); ovl.className="ovl";
+    ovl.innerHTML=
+      '<div class="sheet" role="dialog" aria-modal="true" aria-label="'+L("Korte vragenlijst","Quick survey")+'">'+
+        '<div class="row" style="justify-content:space-between;align-items:flex-start;flex-wrap:nowrap;gap:10px">'+
+          '<div><h3>'+L("Heel kort — help je mee? 💬","Super quick — help us out? 💬")+'</h3>'+
+          '<p class="muted" style="margin:3px 0 0;font-size:13.5px">'+L("3 vraagjes (±10 sec). Anoniem, tenzij je je naam invult.","3 tiny questions (~10 sec). Anonymous unless you add your name.")+'</p></div>'+
+          '<button class="sx" id="svX" aria-label="'+L("Sluiten","Close")+'">✕</button>'+
+        '</div>'+
+        '<div class="qblk"><span class="ql">'+L("Helpt deze oefentool je?","Is this practice tool helping you?")+'</span>'+
+          '<div class="chips" id="svHelp">'+[["ja",L("Ja, zeker","Yes, a lot")],["beetje",L("Een beetje","A little")],["nog",L("Nog niet","Not yet")]].map(function(o){return '<button class="chip" data-v="'+o[0]+'">'+o[1]+'</button>';}).join("")+'</div></div>'+
+        '<div class="qblk"><span class="ql">'+L("Hoe tevreden ben je?","How satisfied are you?")+'</span>'+
+          '<div class="stars" id="svStars">'+[1,2,3,4,5].map(function(n){return '<button data-n="'+n+'" aria-label="'+n+'/5">★</button>';}).join("")+'</div></div>'+
+        '<div class="qblk"><span class="ql">'+L("Wil je in een WhatsApp-groep met updates & nieuwe vragen?","Want a WhatsApp group with updates & new questions?")+'</span>'+
+          '<div class="chips" id="svWa">'+[["ja",L("Ja, graag","Yes please")],["nee",L("Nee, bedankt","No thanks")]].map(function(o){return '<button class="chip" data-v="'+o[0]+'">'+o[1]+'</button>';}).join("")+'</div>'+
+          '<div id="svWaBox" class="hide" style="margin-top:8px"><input type="text" id="svContact" placeholder="'+L("Naam of nummer (optioneel)","Name or number (optional)")+'"></div></div>'+
+        '<div class="qblk" id="svRevBlk"><span class="ql">'+L("Laat een review achter","Leave a review")+' <span class="muted" style="font-weight:500">('+L("optioneel","optional")+')</span></span>'+
+          '<textarea id="svRev" rows="2" placeholder="'+L("Wat vind je van de tool?","What do you think of the tool?")+'"></textarea>'+
+          '<input type="text" id="svName" style="margin-top:8px" placeholder="'+L("Je voornaam (bij je review)","Your first name (with your review)")+'">'+
+          '<label class="fld" style="font-weight:500;display:flex;gap:8px;align-items:flex-start;margin:10px 0 0"><input type="checkbox" id="svConsent" style="margin-top:3px"> <span>'+L("Mijn review mag op de site getoond worden","My review may be shown on the site")+'</span></label></div>'+
+        '<input type="text" id="svBot" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0">'+
+        '<div class="row" style="margin-top:18px;align-items:center"><button class="btn" id="svSend">'+ic("send")+L("Versturen","Send")+'</button><button class="btn ghost" id="svLater">'+L("Misschien later","Maybe later")+'</button><span id="svStatus" style="font-size:13px"></span></div>'+
+      '</div>';
+    document.body.appendChild(ovl);
+    function onKey(e){ if(e.key==="Escape") closeSv(true); }
+    document.addEventListener("keydown",onKey);
+    function closeSv(hide){ if(hide){ try{localStorage.setItem("socio_survey_hide","1");}catch(e){} } document.removeEventListener("keydown",onKey); if(ovl.parentNode) ovl.parentNode.removeChild(ovl); surveyOpen=false; }
+    ovl.onclick=function(e){ if(e.target===ovl) closeSv(true); };
+    ovl.querySelector("#svX").onclick=function(){ closeSv(true); };
+    ovl.querySelector("#svLater").onclick=function(){ closeSv(true); };
+    var helpBtns=[].slice.call(ovl.querySelectorAll("#svHelp .chip"));
+    helpBtns.forEach(function(b){ b.onclick=function(){ sv.helps=b.dataset.v; helpBtns.forEach(function(x){x.classList.toggle("on",x===b);}); }; });
+    var starBtns=[].slice.call(ovl.querySelectorAll("#svStars button"));
+    starBtns.forEach(function(b){ b.onclick=function(){ sv.rating=+b.dataset.n; starBtns.forEach(function(x){x.classList.toggle("on",+x.dataset.n<=sv.rating);}); }; });
+    var waBtns=[].slice.call(ovl.querySelectorAll("#svWa .chip")), waBox=ovl.querySelector("#svWaBox");
+    waBtns.forEach(function(b){ b.onclick=function(){ sv.wa=b.dataset.v; waBtns.forEach(function(x){x.classList.toggle("on",x===b);}); waBox.classList.toggle("hide", sv.wa!=="ja"); }; });
+    if(focusReview){ var rb=ovl.querySelector("#svRevBlk"); if(rb) rb.scrollIntoView({behavior:"smooth",block:"center"}); var rv0=ovl.querySelector("#svRev"); if(rv0) setTimeout(function(){ rv0.focus(); },220); }
+    ovl.querySelector("#svSend").onclick=function(){
+      if(ovl.querySelector("#svBot").value) return;
+      var contact=ovl.querySelector("#svContact").value.trim();
+      var rev=ovl.querySelector("#svRev").value.trim();
+      var name=ovl.querySelector("#svName").value.trim();
+      var consent=ovl.querySelector("#svConsent").checked;
+      var status=ovl.querySelector("#svStatus");
+      if(!sv.helps && !sv.rating && !rev){ status.style.color="var(--bad)"; status.textContent=L("Beantwoord minstens één vraagje 🙂","Answer at least one question 🙂"); return; }
+      var btn=ovl.querySelector("#svSend"); btn.disabled=true; status.style.color="var(--muted)"; status.textContent=L("Versturen…","Sending…");
+      var payload={_subject:"Sociologie-tool: enquête", _template:"table", _captcha:"false",
+        Helpt_de_tool:sv.helps||"-", Tevredenheid:(sv.rating?sv.rating+"/5":"-"), WhatsApp_groep:sv.wa||"-", WhatsApp_contact:contact||"-",
+        Review:rev||"-", Review_naam:name||"-", Mag_getoond_worden:consent?"ja":"nee"};
+      function done(){ try{localStorage.setItem("socio_survey_done","1");}catch(e){}
+        ovl.querySelector(".sheet").innerHTML='<div class="center" style="padding:8px 0"><div style="font-size:42px">🙌</div><h3 style="margin:6px 0">'+L("Bedankt!","Thank you!")+'</h3><p class="muted" style="margin:0 0 16px">'+L("Je antwoord helpt enorm. Veel succes met studeren! 💪","Your answer helps a lot. Good luck studying! 💪")+'</p><button class="btn" id="svClose2">'+L("Sluiten","Close")+'</button></div>';
+        ovl.querySelector("#svClose2").onclick=function(){ closeSv(false); };
+      }
+      fetch("https://formsubmit.co/ajax/Berat007yildirim@gmail.com",{method:"POST",headers:{Accept:"application/json"},body:new URLSearchParams(payload)})
+        .then(function(r){return r.json();}).then(function(){ done(); }).catch(function(){ done(); });
+    };
+  }
+
   // bezoeker tellen (1x per toestel)
   try{ if(!localStorage.getItem("socio_seen")){ localStorage.setItem("socio_seen","1"); bump("berat-socio","gebruikers"); } }catch(e){ bump("berat-socio","gebruikers"); }
   // traject vanuit de hub overnemen → direct naar de oefenpagina
@@ -506,6 +607,8 @@ window.SOCIO = {"chapters":{"1":"De sociologische verzuchting","2":"De taak en h
   }catch(e){}
   render();
   (function(){ var _sp=document.getElementById("splash"); if(!_sp) return; var _red=false; try{_red=window.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){} setTimeout(function(){ _sp.classList.add("hide"); setTimeout(function(){ if(_sp&&_sp.parentNode) _sp.parentNode.removeChild(_sp); }, 700); }, _red?300:1850); })();
+  // eenmalig de mini-enquête tonen (niet als al beantwoord of weggeklikt)
+  try{ if(!localStorage.getItem("socio_survey_done") && !localStorage.getItem("socio_survey_hide")){ setTimeout(function(){ if(state.view==="home" && !state.quiz && !surveyOpen) openSurvey(false); }, 3400); } }catch(e){}
 })();
 
 </script>
