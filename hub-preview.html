@@ -174,7 +174,20 @@
       {n:"MBG", url:BASE+"mbg/"},
       {n:"Meer vakken", soon:true}
     ]},
-    {y:"2de bachelor", tag:"2", cls:"v", subjects:[]},
+    {y:"2de bachelor", tag:"2", cls:"v", subjects:[
+      {n:"A&O", sp:6, soon:true},
+      {n:"BP 2", sp:6, soon:true},
+      {n:"PP", sp:3, soon:true},
+      {n:"Klinische", sp:6, soon:true},
+      {n:"Stats 3", sp:6, soon:true},
+      {n:"Projectweek 1", sp:3, soon:true},
+      {n:"Sociale 2", sp:6, soon:true},
+      {n:"THG", sp:3, soon:true},
+      {n:"Cognitieve", sp:6, soon:true},
+      {n:"Cross Cult", sp:3, soon:true},
+      {n:"OMT 2", sp:6, soon:true},
+      {n:"Inl tot ortho", sp:6, soon:true}
+    ]},
     {y:"3de bachelor", tag:"3", cls:"a", subjects:[]}
   ];
 
@@ -186,7 +199,8 @@
     DATA.forEach(function(yr,i){
       var ready=count(yr.subjects), total=yr.subjects.length;
       var sub = total===0 ? 'Binnenkort — in de maak'
-              : (ready>0 ? ready+' vak'+(ready>1?'ken':'')+' klaar om te oefenen' : 'In de maak');
+              : ready>0 ? (ready+' van '+total+' klaar om te oefenen')
+              : (total+' vakken · in de maak');
       html+='<button class="ycard '+yr.cls+'" data-y="'+i+'">'+
         '<span class="tile">'+yr.tag+'</span>'+
         '<b>'+esc(yr.y)+'</b>'+
@@ -209,7 +223,7 @@
       yr.subjects.forEach(function(s){
         var first=esc((s.n||"?").charAt(0).toUpperCase());
         if(s.soon){
-          html+='<div class="vcard soon"><span class="vi">'+ic("clock")+'</span><span class="vt"><b>'+esc(s.n)+'</b><small>komt binnenkort</small></span><span class="pill">'+ic("clock")+'In de maak</span></div>';
+          html+='<div class="vcard soon"><span class="vi">'+ic("clock")+'</span><span class="vt"><b>'+esc(s.n)+'</b><small>'+(s.sp?esc(s.sp+' SP'):'komt binnenkort')+'</small></span><span class="pill">'+ic("clock")+'In de maak</span></div>';
         } else {
           html+='<a class="vcard" href="'+esc(s.url)+'"><span class="vi">'+first+'</span><span class="vt"><b>'+esc(s.n)+'</b><small>oefenen → examen of herkansing</small></span><span class="vgo">'+ic("arrowR")+'</span></a>';
         }
