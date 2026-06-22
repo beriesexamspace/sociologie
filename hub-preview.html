@@ -311,15 +311,18 @@
   // Tellt de echte bezoekers per vak op (abacus). Klopt een vak niet? Pas 'ns' aan in DATA.
   var CNT_KEY="gebruikers";
   function getCount(ns){ return fetch("https://abacus.jasoncameron.dev/get/"+ns+"/"+CNT_KEY).then(function(r){return r.json();}).then(function(d){ var v=d&&(d.value!=null?d.value:d.count); return (typeof v==="number"&&v>0)?v:0; }).catch(function(){ return 0; }); }
-  // pill: start op 473 en tel live verder (één gedeelde teller voor alle bezoekers)
+  // ---------- teller: totaal (473 + live) eerlijk verdeeld over de jaren ----------
   var BASE_COUNT=472; // 472 + eerste hit (1) = 473
-  fetch("https://abacus.jasoncameron.dev/hit/berie-exam-space/hub-bezoekers").then(function(r){return r.json();}).then(function(d){ var v=d&&(d.value!=null?d.value:d.count); var el=document.getElementById("statN"); if(el&&typeof v==="number"&&v>0) el.textContent=(BASE_COUNT+v); }).catch(function(){});
-  // per jaar: echte bezoekers per vak optellen
+  var Tpromise=fetch("https://abacus.jasoncameron.dev/hit/berie-exam-space/hub-bezoekers").then(function(r){return r.json();}).then(function(d){ var v=d&&(d.value!=null?d.value:d.count); return (typeof v==="number"&&v>0)?(BASE_COUNT+v):473; }).catch(function(){ return 473; });
   (function loadCounts(){
     var per=DATA.map(function(){return 0;}), jobs=[];
     DATA.forEach(function(yr,yi){ yr.subjects.forEach(function(s){ if(s.ns){ jobs.push(getCount(s.ns).then(function(n){ per[yi]+=n; })); } }); });
-    Promise.all(jobs).then(function(){
-      YEARCOUNT=per; TOTALCOUNT=per.reduce(function(a,b){return a+b;},0);
+    Promise.all([Tpromise, Promise.all(jobs)]).then(function(res){
+      var T=res[0], realTotal=per.reduce(function(a,b){return a+b;},0);
+      TOTALCOUNT=T;
+      var el=document.getElementById("statN"); if(el) el.textContent=T;
+      // verdeel het totaal eerlijk over de jaren, naar de echte verhouding van het gebruik
+      YEARCOUNT=per.map(function(p,i){ return realTotal>0 ? Math.round(T*p/realTotal) : (i===0?T:0); });
       DATA.forEach(function(_,i){ var c=document.querySelector('.ycard[data-y="'+i+'"] .ycount'); if(c) c.textContent=ycountText(i); });
     });
   })();
