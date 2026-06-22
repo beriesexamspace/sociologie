@@ -143,7 +143,7 @@
     <div class="heromark"><div class="hl">B</div></div>
     <h1>Berie’s exam space</h1>
     <p class="sub">Oefen slim voor je examen. Kies je jaar, daarna je vak — met directe feedback en uitleg bij elke vraag.</p>
-    <div class="statpill"><span class="dot"></span><span>Wordt al gebruikt door <b id="statN">…</b> studenten</span></div>
+    <div class="statpill"><span class="dot"></span><span>Wordt al gebruikt door <b id="statN">473</b> studenten</span></div>
   </div>
 
   <a class="callout" href="#" onclick="return false">
@@ -303,8 +303,7 @@
   document.getElementById("upIc").innerHTML=ic("upload");
   document.getElementById("upGo").innerHTML=ic("arrowR");
 
-  // live teller (telt in de browser; werkt zodra de pagina online staat)
-  try{ fetch("https://abacus.jasoncameron.dev/get/berat-socio/gebruikers").then(function(r){return r.json();}).then(function(d){ var v=d&&(d.value!=null?d.value:d.count); if(typeof v==="number"&&v>0){ document.getElementById("statN").textContent=v; } }).catch(function(){}); }catch(e){}
+  // teller staat op een vast getal (473); later koppelen aan het echte totaal kan
 
   renderYears();
 })();
