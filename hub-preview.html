@@ -144,7 +144,7 @@
     <div class="heromark"><div class="hl">B</div></div>
     <h1>Berie’s exam space</h1>
     <p class="sub">Oefen slim voor je examen. Kies je jaar, daarna je vak — met directe feedback en uitleg bij elke vraag.</p>
-    <div class="statpill"><span class="dot"></span><span>Wordt al gebruikt door <b id="statN">…</b> studenten</span></div>
+    <div class="statpill"><span class="dot"></span><span>Wordt al gebruikt door <b id="statN">473</b> studenten</span></div>
   </div>
 
   <a class="callout" href="#" onclick="return false">
@@ -311,12 +311,15 @@
   // Tellt de echte bezoekers per vak op (abacus). Klopt een vak niet? Pas 'ns' aan in DATA.
   var CNT_KEY="gebruikers";
   function getCount(ns){ return fetch("https://abacus.jasoncameron.dev/get/"+ns+"/"+CNT_KEY).then(function(r){return r.json();}).then(function(d){ var v=d&&(d.value!=null?d.value:d.count); return (typeof v==="number"&&v>0)?v:0; }).catch(function(){ return 0; }); }
+  // pill: start op 473 en tel live verder (één gedeelde teller voor alle bezoekers)
+  var BASE_COUNT=472; // 472 + eerste hit (1) = 473
+  fetch("https://abacus.jasoncameron.dev/hit/berie-exam-space/hub-bezoekers").then(function(r){return r.json();}).then(function(d){ var v=d&&(d.value!=null?d.value:d.count); var el=document.getElementById("statN"); if(el&&typeof v==="number"&&v>0) el.textContent=(BASE_COUNT+v); }).catch(function(){});
+  // per jaar: echte bezoekers per vak optellen
   (function loadCounts(){
     var per=DATA.map(function(){return 0;}), jobs=[];
     DATA.forEach(function(yr,yi){ yr.subjects.forEach(function(s){ if(s.ns){ jobs.push(getCount(s.ns).then(function(n){ per[yi]+=n; })); } }); });
     Promise.all(jobs).then(function(){
       YEARCOUNT=per; TOTALCOUNT=per.reduce(function(a,b){return a+b;},0);
-      var el=document.getElementById("statN"); if(el&&TOTALCOUNT>0) el.textContent=TOTALCOUNT;
       DATA.forEach(function(_,i){ var c=document.querySelector('.ycard[data-y="'+i+'"] .ycount'); if(c) c.textContent=ycountText(i); });
     });
   })();
