@@ -407,7 +407,7 @@ window.SOCIO = {"chapters":{"1":"De sociologische verzuchting","2":"De taak en h
       '<div id="opts">'+cur.opts.map(function(o,i){return '<button class="opt" data-i="'+i+'" style="--oi:'+(i*45)+'ms"><span class="k">'+String.fromCharCode(65+i)+'</span><span>'+esc(LANG==="en"&&q.o_en?q.o_en[o.i]:q.o[o.i][0])+'</span></button>';}).join("")+'</div>'+
       (qF(q,"note")?'<div class="feedback" style="background:var(--amber-soft);color:var(--amber)">⚠️ '+esc(qF(q,"note"))+'</div>':'')+
       '<div id="fb"></div>'+
-      '<div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn" id="actBtn" disabled>'+L("Controleer","Check")+'</button></div></div>';
+      '<div class="row" style="justify-content:space-between;margin-top:6px">'+(Q.idx>0?'<button class="btn ghost" id="prevBtn">'+ic("back")+L("Vorige","Previous")+'</button>':'<span></span>')+'<button class="btn" id="actBtn" disabled>'+L("Controleer","Check")+'</button></div></div>';
     setHTML(html);
     var i2=document.querySelector(".bar>i"); requestAnimationFrame(function(){ if(i2) i2.style.width=i2.getAttribute("data-w")+"%"; });
     document.getElementById("backBtn").onclick=function(){ state.quiz=null; renderQuizGate(); };
@@ -420,10 +420,12 @@ window.SOCIO = {"chapters":{"1":"De sociologische verzuchting","2":"De taak en h
       optBtns.forEach(function(b){ var i=+b.dataset.i, o=cur.opts[i]; b.disabled=true; b.classList.remove("sel"); var picked=cur.picked.indexOf(i)>=0; if(o.ok){ b.classList.add("correct"); if(!picked) allCorrect=false; } else if(picked){ b.classList.add("wrong"); allCorrect=false; } });
       var fb=document.getElementById("fb"); fb.className="feedback "+(allCorrect?"ok":"no");
       fb.innerHTML=allCorrect?("<b>"+rnd(PRAISE)+" ✓</b>"):("<b>"+wrongLead()+"</b><span class=\"sub\">"+L("De juiste antwoorden staan in het groen.","The correct answers are shown in green.")+"</span>");
-      if(allCorrect)Q.correct++; else Q.wrong.push(q);
+      if(!cur.scored){ cur.scored=true; if(allCorrect)Q.correct++; else Q.wrong.push(q); }
       refreshBtn(); act.focus();
     }
     act.onclick=function(){ if(!cur.done){ if(cur.picked.length!==q.pick) return; reveal(); } else { Q.idx++; if(Q.idx>=Q.items.length)Q.done=true; renderQuiz(); } };
+    var pb=document.getElementById("prevBtn"); if(pb)pb.onclick=function(){ if(Q.idx>0){ Q.idx--; renderQuiz(); } };
+    if(cur.done) reveal();
   }
 
   function renderResult(){
