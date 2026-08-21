@@ -317,7 +317,7 @@ window.SOCIO = {"chapters":{"1":"De sociologische verzuchting","2":"De taak en h
   function renderTrack(){
     var html=
       '<div class="hero">'+
-        '<div class="count"><b>'+D.questions.length+'</b><span>'+L("examenvragen","exam questions")+'</span></div>'+
+        '<div class="count"><b data-telop="'+D.questions.length+'">'+D.questions.length+'</b><span>'+L("examenvragen","exam questions")+'</span></div>'+
         '<div class="herotext"><h1>'+L("Sociologie oefenen","Practise sociology")+'</h1>'+
         '<p>'+L("Examenvragen uit alle 16 hoofdstukken · 1ste bachelor · met directe feedback","Exam questions from all 16 chapters · 1st bachelor · with instant feedback")+'</p></div>'+
       '</div>'+
@@ -409,6 +409,15 @@ window.SOCIO = {"chapters":{"1":"De sociologische verzuchting","2":"De taak en h
       '<div id="fb"></div>'+
       '<div class="row" style="justify-content:space-between;margin-top:6px">'+(Q.idx>0?'<button class="btn ghost" id="prevBtn">'+ic("back")+L("Vorige","Previous")+'</button>':'<span></span>')+'<button class="btn" id="actBtn" disabled>'+L("Controleer","Check")+'</button></div></div>';
     setHTML(html);
+    var tl=document.querySelector("b[data-telop]");
+    if(tl){ var doel=+tl.getAttribute("data-telop")||0;
+      var stil=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if(stil||doel<=0){ tl.textContent=doel; }
+      else { tl.textContent=0; var t0=null, duur=900;
+        requestAnimationFrame(function stap(ts){ if(t0===null)t0=ts;
+          var p=Math.min(1,(ts-t0)/duur), e=1-Math.pow(1-p,3);
+          tl.textContent=Math.round(doel*e);
+          if(p<1) requestAnimationFrame(stap); else tl.textContent=doel; }); } }
     var i2=document.querySelector(".bar>i"); requestAnimationFrame(function(){ if(i2) i2.style.width=i2.getAttribute("data-w")+"%"; });
     document.getElementById("backBtn").onclick=function(){ state.quiz=null; renderQuizGate(); };
     var optBtns=[].slice.call(document.querySelectorAll("#opts .opt"));
